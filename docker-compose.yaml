@@ -1,0 +1,18 @@
+version: "3.9"
+
+services:
+  database:
+    image: mysql:8.0.29
+    ports:
+      - ${DATABASE_PORT}:3306
+    environment:
+        MYSQL_ROOT_PASSWORD: ${DATABASE_PASSWORD}
+        MYSQL_DATABASE: ${DATABASE_NAME}
+
+  test_database:
+    image: mysql:8.0.29
+    ports:
+      - ${TEST_DATABASE_PORT}:3306
+    environment:
+        MYSQL_ROOT_PASSWORD: ${DATABASE_PASSWORD}
+        MYSQL_DATABASE: ${DATABASE_NAME}
