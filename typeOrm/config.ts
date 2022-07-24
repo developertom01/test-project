@@ -1,5 +1,7 @@
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { Price } from 'src/products/entities/price.entity';
+import { Product } from 'src/products/entities/product.entity';
 
 export const TypeOrmConfigModule = () =>
   TypeOrmModule.forRootAsync({
@@ -7,6 +9,7 @@ export const TypeOrmConfigModule = () =>
       const env = configService.get<'development' | 'production' | 'test'>(
         'NODE_ENV',
       );
+
       return {
         type: 'mysql',
         port:
@@ -19,7 +22,8 @@ export const TypeOrmConfigModule = () =>
         synchronize: true,
         password: configService.get<string>('DATABASE_PASSWORD'),
         cache: env === 'production',
-        entities: [],
+        entities: [Product, Price],
+        logging: true,
       };
     },
     inject: [ConfigService],
