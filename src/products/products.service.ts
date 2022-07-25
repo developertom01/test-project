@@ -16,22 +16,23 @@ export class ProductsService {
     private readonly dataSource: DataSource,
   ) {}
   public async create(createProductDto: CreateProductDto) {
-    let product = this.productRepository.create({
-      name: createProductDto.name,
-    });
-    let price: Price;
-    if (createProductDto.price) {
-      price = this.priceRepository.create({
-        price: createProductDto.price.value,
+    let product = await this.dataSource.transaction(async (manager) => {
+      let product = this.productRepository.create({
+        name: createProductDto.name,
       });
-    }
-    product = await this.dataSource.transaction(async (manager) => {
-      const createdProduct = await manager.save(product);
-      if (price) {
+
+      product = await manager.save(product);
+      if (createProductDto.price) {
+        const price = this.priceRepository.create({
+          price: createProductDto.price.value,
+          productId: product.id,
+        });
         await manager.save(price);
       }
-      return createdProduct;
+
+      return product;
     });
+    console.log(product, 'asdasdasdasdasdasd');
 
     product = await this.productRepository.findOne({
       where: { id: product.id },
@@ -45,8 +46,9 @@ export class ProductsService {
   }
 
   public async findOne(uuid: string) {
-    const product = await this.productRepository.findOneBy({
-      uuid,
+    const product = await this.productRepository.findOne({
+      where: { uuid },
+      relations: { prices: true },
     });
     if (!product) {
       throw new NotFoundException('Unknown product');

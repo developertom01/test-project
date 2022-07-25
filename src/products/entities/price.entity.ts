@@ -12,7 +12,7 @@ import {
 import { v4 as uuidV4 } from 'uuid';
 import { Product } from './product.entity';
 
-@Entity({ orderBy: { createdAt: { order: 'DESC' } } })
+@Entity({ orderBy: { createdAt: 'DESC' } })
 export class Price {
   @Exclude()
   @PrimaryGeneratedColumn({ type: 'bigint' })
@@ -46,4 +46,10 @@ export class Price {
   })
   @JoinColumn({ name: 'productId' })
   product: Product;
+
+  toJSON() {
+    delete this.id;
+    delete this.productId;
+    return this;
+  }
 }

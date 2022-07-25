@@ -12,10 +12,12 @@ import {
 } from 'typeorm';
 import { Price } from './price.entity';
 import { v4 as uuidV4 } from 'uuid';
-import moment from 'moment';
+import * as moment from 'moment';
+import { Exclude } from 'class-transformer';
 
-@Entity({ orderBy: { createdAt: { order: 'DESC' } } })
+@Entity({ orderBy: { createdAt: 'DESC' } })
 export class Product {
+  @Exclude()
   @PrimaryGeneratedColumn({ type: 'bigint' })
   public id: string;
 
@@ -34,7 +36,7 @@ export class Product {
     lazy: true,
     nullable: true,
   })
-  public readonly prices?: Price[];
+  public prices?: Price[];
 
   @CreateDateColumn()
   public createdAt: Date;
@@ -51,5 +53,9 @@ export class Product {
   @BeforeUpdate()
   updateDate() {
     this.updatedAt = moment.utc().toDate();
+  }
+  toJSON() {
+    delete this.id;
+    return this;
   }
 }

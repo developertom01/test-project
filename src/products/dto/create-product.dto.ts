@@ -1,13 +1,13 @@
 import {
-  Allow,
-  IsArray,
-  IsEmpty,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
 } from 'class-validator';
 
 export class CreatePriceDto {
+  @IsNumber()
+  @IsNotEmpty()
   value: number;
 }
 
@@ -16,7 +16,6 @@ export class CreateProductDto {
   @IsNotEmpty()
   name: string;
 
-  @IsArray({})
   @IsOptional()
   price?: CreatePriceDto | null;
 }
