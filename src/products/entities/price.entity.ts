@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import {
   Column,
   CreateDateColumn,
@@ -11,8 +12,9 @@ import {
 import { v4 as uuidV4 } from 'uuid';
 import { Product } from './product.entity';
 
-@Entity({})
+@Entity({ orderBy: { createdAt: { order: 'DESC' } } })
 export class Price {
+  @Exclude()
   @PrimaryGeneratedColumn({ type: 'bigint' })
   public id: string;
 

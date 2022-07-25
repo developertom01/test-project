@@ -1,5 +1,6 @@
 import {
   BeforeInsert,
+  BeforeUpdate,
   Column,
   CreateDateColumn,
   Entity,
@@ -9,9 +10,11 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { v4 as uuidV4 } from 'uuid';
 import { Price } from './price.entity';
-@Entity({})
+import { v4 as uuidV4 } from 'uuid';
+import moment from 'moment';
+
+@Entity({ orderBy: { createdAt: { order: 'DESC' } } })
 export class Product {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   public id: string;
@@ -27,7 +30,7 @@ export class Product {
   })
   public name: string;
 
-  @OneToMany((price) => Price, (price) => price.product, {
+  @OneToMany(() => Price, (price) => price.product, {
     lazy: true,
     nullable: true,
   })
@@ -38,4 +41,15 @@ export class Product {
 
   @UpdateDateColumn()
   public updatedAt: Date;
+
+  @BeforeInsert()
+  addUUIdAndUpdateDates() {
+    this.uuid = uuidV4();
+    this.createdAt = moment.utc().toDate();
+    this.updatedAt = moment.utc().toDate();
+  }
+  @BeforeUpdate()
+  updateDate() {
+    this.updatedAt = moment.utc().toDate();
+  }
 }
